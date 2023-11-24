@@ -296,31 +296,3 @@ def exp(x):
         output += (x**i) * (1/(math.factorial(i)))
     return output
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
