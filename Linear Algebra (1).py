@@ -271,7 +271,62 @@ class Matrix(Vector):
             return "Only can augment with other matrix or vectors"
         
         return Matrix(matrix).transpose()
-        
+    
+    def _(self, other):
+        matrix = self.values
+        if (type(other) == Vector):
+            matrix.append(other)
+        elif (type(other) == Matrix):
+            matrix.extend(other.values)
+        else:
+            return "Only can augment with other matrix or vectors"
+        return Matrix(matrix)
+
+    
+    def adj(self):
+        rows, cols = self.dim
+        matrix = self.values
+        matrix = list(map(lambda x: x.values, matrix))
+        #print(f"matrix is \n{matrix}\n")
+        output = []
+        for row in range(rows):
+            new_vector = []
+            for col in range(cols):
+                #cofactor matrix
+                cofactor = matrix[:row] + matrix[row+1:]
+                cofactor = list(map(lambda x: x[:col] + x[col+1:], cofactor))
+                cofactor = list(map(lambda x: Vector(x), cofactor))
+                determinant = Matrix(cofactor).det*((-1)**(row+col))
+                new_vector.append(determinant)
+            output.append(Vector(new_vector)) 
+        return Matrix(output).transpose()
+
+    def rnd(self, digits):
+        output = []
+        matrix = self.values
+        matrix = list(map(lambda x: x.values, matrix))
+        for vector in matrix:
+            new_vector = list(map(lambda x: round(x, digits), vector))
+            output.append(Vector(new_vector))
+        return Matrix(output)
+    
+    def int(self):
+        output = []
+        matrix = self.values
+        matrix = list(map(lambda x: x.values, matrix))
+        for vector in matrix:
+            itype = type(1)
+            new_vector = list(map(lambda x: itype(x), vector))
+            output.append(Vector(new_vector))
+        return Matrix(output)
+
+    def inverse(self):
+        if (self.det == 0):
+            return "Not Invertible Matrix"
+        else:
+            scale = 1/self.det
+            output = self.adj() * scale
+            return output
             
             
             
