@@ -108,11 +108,14 @@ class Vector(object):
 
 class Matrix(Vector):
     def __init__(self, argv):
-        for arg in argv:
-            argtype = type(arg)
-            if (argtype != (Vector)):
-                raise TypeError("a Matrix must only contain Vectors!")
-        self.values = list(argv)
+        if (set([type(X) for X in argv])=={list}):
+            self.values = [Vector(X) for X in argv]
+        else:
+            for arg in argv:
+                argtype = type(arg)
+                if (argtype != (Vector)):
+                    raise TypeError("a Matrix must only contain Vectors!")
+            self.values = list(argv)
 
     def __str__(self):
         output = ""
@@ -150,10 +153,9 @@ class Matrix(Vector):
         
     def __mul__(self, other):
         if (type(other) == int) or (type(other) == float):
-            tempM, matrix = [], self.values
-            for vector in matrix:
-                tempM.append(vector*other)
-            return Matrix(tempM)
+            matrix = self.values
+            output = Matrix([vector*other for vector in matrix])
+            return output
         elif (type(other) == Vector):
             if (self.dim[1] != other.dim[0]):
                 raise DimensionError("Incompatible Dimensions!")
@@ -323,6 +325,12 @@ class Matrix(Vector):
     def inverse(self):
         if (self.det == 0):
             return "Not Invertible Matrix"
+        elif (self.dim == (2,2)):
+            u,v = self
+            a,b=u
+            c,d=v
+            k=1/(a*d-b*c)
+            return Matrix([Vector([d, -1*b]), Vector([-1*c,a])])*k
         else:
             scale = 1/self.det
             output = self.adj() * scale
@@ -339,6 +347,11 @@ w1, w2, w3 = Vector((1, 2, 3)), Vector((5, 8, 9)), Vector((12, -1, 2))
 W = Matrix((w1, w2, w3))
 l1, l2, l3 = Vector((0, 2, 3)), Vector((5, 8, 9)), Vector((0, 0, 2))
 L = Matrix((l1,l2,l3))
+A=Matrix([Vector([6, 21]),
+   Vector([21,122])])
+B=Matrix([Vector([1,1,1,1,1]),
+        Vector([1,2,4,6,8])])
+Y=Vector([3,5,4,9,12])
 '''
 print(f"sum is {u1}")
 print(f"dot product is {u2}")
